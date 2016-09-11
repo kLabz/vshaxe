@@ -4,13 +4,47 @@ import vscode.*;
 import Vscode.*;
 import haxe.Constraints.Function;
 
+class ClientServer {
+    public var client:LanguageClient;
+    public var server:Disposable;
+    public var fileWatcher:FileSystemWatcher;
+
+    public function new(context:ExtensionContext, client:LanguageClient, suffix:String) {
+        this.client = client;
+        client.onReady().then(function(_) {
+            client.outputChannel.appendLine(suffix + " language server started");
+            fileWatcher = workspace.createFileSystemWatcher("**/*." + suffix, false, true, true);
+            context.subscriptions.push(fileWatcher);
+        });
+        var serverDisposable = client.start();
+        context.subscriptions.push(serverDisposable);
+        server = serverDisposable;
+    }
+
+    public function stop(context:ExtensionContext) {
+        if (client != null && client.outputChannel != null)
+            client.outputChannel.dispose();
+
+        if (server != null) {
+            context.subscriptions.remove(server);
+            server.dispose();
+            server = null;
+        }
+
+        if (fileWatcher != null) {
+            context.subscriptions.remove(fileWatcher);
+            fileWatcher.dispose();
+            fileWatcher = null;
+        }
+    }
+}
+
 class Main {
     var context:ExtensionContext;
-    var serverDisposable:Disposable;
-    var hxFileWatcher:FileSystemWatcher;
+    var hx:ClientServer;
+    // var hxml:ClientServer;
     var vshaxeChannel:OutputChannel;
     var displayConfig:DisplayConfiguration;
-    var client:LanguageClient;
 
     function new(ctx) {
         context = ctx;
@@ -18,12 +52,13 @@ class Main {
         displayConfig = new DisplayConfiguration(ctx);
         new InitProject(ctx);
 
-        registerCommand("restartLanguageServer", restartLanguageServer);
+        registerCommand("restartLanguageServer", restartLanguageServers);
         registerCommand("applyFixes", applyFixes);
         registerCommand("showReferences", showReferences);
         registerCommand("runGlobalDiagnostics", runGlobalDiagnostics);
 
-        startLanguageServer();
+        hx = startHxLanguageServer();
+        // hxml = startHxmlLanguageServer();
     }
 
     function registerCommand(command:String, callback:Function) {
@@ -60,10 +95,10 @@ class Main {
     }
 
     function runGlobalDiagnostics() {
-        client.sendNotification({method: "vshaxe/runGlobalDiagnostics"});
+        hx.client.sendNotification({method: "vshaxe/runGlobalDiagnostics"});
     }
 
-    function startLanguageServer() {
+    function startHxLanguageServer() {
         var serverModule = context.asAbsolutePath("./server_wrapper.js");
         var serverOptions = {
             run: {module: serverModule, options: {env: js.Node.process.env}},
@@ -78,48 +113,48 @@ class Main {
                 displayConfigurationIndex: displayConfig.getIndex()
             }
         };
-        client = new LanguageClient("haxe", "Haxe", serverOptions, clientOptions);
-        client.onReady().then(function(_) {
-            client.outputChannel.appendLine("Haxe language server started");
+        var hx = new ClientServer(context, new LanguageClient("haxe", "Haxe", serverOptions, clientOptions), "hx");
+        hx.client.onReady().then(function(_) {
             displayConfig.onDidChangeIndex = function(index) {
-                client.sendNotification({method: "vshaxe/didChangeDisplayConfigurationIndex"}, {index: index});
+                hx.client.sendNotification({method: "vshaxe/didChangeDisplayConfigurationIndex"}, {index: index});
             }
-
-            hxFileWatcher = workspace.createFileSystemWatcher("**/*.hx", false, true, true);
-            context.subscriptions.push(hxFileWatcher.onDidCreate(function(uri) {
+            context.subscriptions.push(hx.fileWatcher.onDidCreate(function(uri) {
                 var editor = window.activeTextEditor;
                 if (editor == null || editor.document.uri.fsPath != uri.fsPath)
                     return;
                 if (editor.document.getText(new Range(0, 0, 0, 1)).length > 0) // skip non-empty created files (can be created by e.g. copy-pasting)
                     return;
 
-                client.sendRequest({method: "vshaxe/determinePackage"}, {fsPath: uri.fsPath}).then(function(result:{pack:String}) {
+                hx.client.sendRequest({method: "vshaxe/determinePackage"}, {fsPath: uri.fsPath}).then(function(result:{pack:String}) {
                     if (result.pack == "")
                         return;
                     editor.edit(function(edit) edit.insert(new Position(0, 0), 'package ${result.pack};\n'));
                 });
             }));
-            context.subscriptions.push(hxFileWatcher);
         });
-        serverDisposable = client.start();
-        context.subscriptions.push(serverDisposable);
+        return hx;
     }
 
-    function restartLanguageServer() {
-        if (client != null && client.outputChannel != null)
-            client.outputChannel.dispose();
-            
-        if (serverDisposable != null) {
-            context.subscriptions.remove(serverDisposable);
-            serverDisposable.dispose();
-            serverDisposable = null;
-        }
-        if (hxFileWatcher != null) {
-            context.subscriptions.remove(hxFileWatcher);
-            hxFileWatcher.dispose();
-            hxFileWatcher = null;
-        }
-        startLanguageServer();
+    function startHxmlLanguageServer() {
+        var serverModule = context.asAbsolutePath("./hxml_server_wrapper.js");
+        var serverOptions = {
+            run: {module: serverModule, options: {env: js.Node.process.env}},
+            debug: {module: serverModule, options: {env: js.Node.process.env, execArgv: ["--nolazy", "--debug=6004"]}}
+        };
+        var clientOptions = {
+            documentSelector: "hxml",
+            synchronize: {
+                configurationSection: "hxml"
+            }
+        };
+        return new ClientServer(context, new LanguageClient("hxml", "HXML", serverOptions, clientOptions), "hxml");
+    }
+
+    function restartLanguageServers() {
+        hx.stop(context);
+        hx = startHxLanguageServer();
+        // hxml.stop(context);
+        // hxml = startHxmlLanguageServer();
     }
 
     @:keep
