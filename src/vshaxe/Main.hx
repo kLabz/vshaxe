@@ -42,7 +42,7 @@ class ClientServer {
 class Main {
     var context:ExtensionContext;
     var hx:ClientServer;
-    // var hxml:ClientServer;
+    var hxml:ClientServer;
     var vshaxeChannel:OutputChannel;
     var displayConfig:DisplayConfiguration;
 
@@ -58,7 +58,7 @@ class Main {
         registerCommand("runGlobalDiagnostics", runGlobalDiagnostics);
 
         hx = startHxLanguageServer();
-        // hxml = startHxmlLanguageServer();
+        hxml = startHxmlLanguageServer();
     }
 
     function registerCommand(command:String, callback:Function) {
@@ -153,8 +153,8 @@ class Main {
     function restartLanguageServers() {
         hx.stop(context);
         hx = startHxLanguageServer();
-        // hxml.stop(context);
-        // hxml = startHxmlLanguageServer();
+        hxml.stop(context);
+        hxml = startHxmlLanguageServer();
     }
 
     @:keep
