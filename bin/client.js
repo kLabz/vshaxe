@@ -176,7 +176,7 @@ class Sys {
 	}
 }
 Sys.__name__ = true;
-var Vscode = require("vscode");
+var Vscode = require("coc.nvim");
 class haxe_Timer {
 	constructor(time_ms) {
 		var me = this;
@@ -798,26 +798,26 @@ class sys_io_File {
 	}
 }
 sys_io_File.__name__ = true;
-var vscode_CodeActionKind = require("vscode").CodeActionKind;
-var vscode_Disposable = require("vscode").Disposable;
-var vscode_EventEmitter = require("vscode").EventEmitter;
-var vscode_Location = require("vscode").Location;
-var vscode_Position = require("vscode").Position;
-var vscode_ProcessExecution = require("vscode").ProcessExecution;
-var vscode__$ProgressLocation_ProgressLocation_$Impl_$ = require("vscode").ProgressLocation;
-var vscode_Range = require("vscode").Range;
-var vscode_RelativePattern = require("vscode").RelativePattern;
-var vscode__$StatusBarAlignment_StatusBarAlignment_$Impl_$ = require("vscode").StatusBarAlignment;
-var vscode_Task = require("vscode").Task;
-var vscode_TaskGroup = require("vscode").TaskGroup;
-var vscode__$TaskPanelKind_TaskPanelKind_$Impl_$ = require("vscode").TaskPanelKind;
-var vscode__$TaskRevealKind_TaskRevealKind_$Impl_$ = require("vscode").TaskRevealKind;
-var vscode__$TaskScope_TaskScope_$Impl_$ = require("vscode").TaskScope;
-var vscode_ThemeColor = require("vscode").ThemeColor;
-var vscode_TreeItem = require("vscode").TreeItem;
-var vscode__$TreeItemCollapsibleState_TreeItemCollapsibleState_$Impl_$ = require("vscode").TreeItemCollapsibleState;
-var vscode_Uri = require("vscode").Uri;
-var vscode__$ViewColumn_ViewColumn_$Impl_$ = require("vscode").ViewColumn;
+var vscode_CodeActionKind = require("coc.nvim").CodeActionKind;
+var vscode_Disposable = require("coc.nvim").Disposable;
+var vscode_EventEmitter = require("coc.nvim").EventEmitter;
+var vscode_Location = require("coc.nvim").Location;
+var vscode_Position = require("coc.nvim").Position;
+var vscode_ProcessExecution = require("coc.nvim").ProcessExecution;
+var vscode__$ProgressLocation_ProgressLocation_$Impl_$ = require("coc.nvim").ProgressLocation;
+var vscode_Range = require("coc.nvim").Range;
+var vscode_RelativePattern = require("coc.nvim").RelativePattern;
+var vscode__$StatusBarAlignment_StatusBarAlignment_$Impl_$ = require("coc.nvim").StatusBarAlignment;
+var vscode_Task = require("coc.nvim").Task;
+var vscode_TaskGroup = require("coc.nvim").TaskGroup;
+var vscode__$TaskPanelKind_TaskPanelKind_$Impl_$ = require("coc.nvim").TaskPanelKind;
+var vscode__$TaskRevealKind_TaskRevealKind_$Impl_$ = require("coc.nvim").TaskRevealKind;
+var vscode__$TaskScope_TaskScope_$Impl_$ = require("coc.nvim").TaskScope;
+var vscode_ThemeColor = require("coc.nvim").ThemeColor;
+var vscode_TreeItem = require("coc.nvim").TreeItem;
+var vscode__$TreeItemCollapsibleState_TreeItemCollapsibleState_$Impl_$ = require("coc.nvim").TreeItemCollapsibleState;
+var vscode_Uri = require("coc.nvim").Uri;
+var vscode__$ViewColumn_ViewColumn_$Impl_$ = require("coc.nvim").ViewColumn;
 class vshaxe_EvalDebugger {
 	constructor(displayArguments,haxeExecutable) {
 		this.displayArguments = displayArguments;
