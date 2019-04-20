@@ -38,7 +38,7 @@
 		"url": "https://github.com/vshaxe/vshaxe.git"
 	},
 	"scripts": {
-		"vscode:prepublish": "haxelib run vshaxe-build -t vshaxe -t language-server-tests -t tm-language"
+		"build": "haxelib run vshaxe-build -t vshaxe -t language-server-tests -t tm-language"
 	},
 	"main": "bin/client.js",
 	"activationEvents": [
