@@ -62,11 +62,11 @@ class TaskConfiguration {
 	}
 
 	public function createTask(definition:TaskDefinition, name:String, args:Array<String>):Task {
-		final exectuable = haxeInstallation.haxe.configuration.executable;
+		final executable = haxeInstallation.haxe.configuration.executable;
 		if (server.displayPort != null && enableCompilationServer) {
 			args = ["--connect", Std.string(server.displayPort)].concat(args);
 		}
-		final execution = new ProcessExecution(exectuable, args, {env: haxeInstallation.env});
+		final execution = new ProcessExecution(executable, args, {env: haxeInstallation.env});
 		final task = new Task(definition, TaskScope.Workspace, name, "haxe", execution, problemMatchers);
 		task.group = TaskGroup.Build;
 		task.presentationOptions = taskPresentation;

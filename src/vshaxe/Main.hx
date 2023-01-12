@@ -12,6 +12,7 @@ import vshaxe.helper.HaxeCodeLensProvider;
 import vshaxe.helper.HaxeConfiguration;
 import vshaxe.helper.HxmlParser;
 import vshaxe.server.LanguageServer;
+import vshaxe.tasks.CustomTaskProvider;
 import vshaxe.tasks.HaxeTaskProvider;
 import vshaxe.tasks.HxmlTaskProvider;
 import vshaxe.tasks.TaskConfiguration;
@@ -70,6 +71,7 @@ function main(context:ExtensionContext) {
 	new VshaxeChangelogPrompt(context);
 
 	final taskConfiguration = new TaskConfiguration(haxeInstallation, problemMatchers, server, api);
+	new CustomTaskProvider(taskConfiguration, hxmlDiscovery);
 	new HxmlTaskProvider(taskConfiguration, hxmlDiscovery);
 	new HaxeTaskProvider(taskConfiguration, displayArguments, haxeDisplayArgumentsProvider);
 

@@ -1176,7 +1176,8 @@
 				"column": 4,
 				"endColumn": 5,
 				"severity": 6,
-				"message": 7
+				"message": 7,
+				"loop": true
 			},
 			{
 				"name": "haxe-absolute",
@@ -1187,13 +1188,15 @@
 				"column": 4,
 				"endColumn": 5,
 				"severity": 6,
-				"message": 7
+				"message": 7,
+				"loop": true
 			},
 			{
 				"name": "haxe-error",
 				"regexp": "^(Error): (.*)$",
 				"severity": 1,
-				"message": 2
+				"message": 2,
+				"loop": true
 			},
 			{
 				"name": "haxe-trace",
@@ -1201,7 +1204,22 @@
 				"file": 1,
 				"line": 2,
 				"message": 3
-			}
+			},
+      {
+        "name": "haxe-pretty",
+        "regexp": "^(?:\\s|\\[)(ERROR|WARNING|INFO)(?:\\s|\\])(.*):(\\d+):(?:\\scharacters?\\s(\\d+)(?:-(\\d+)))$",
+        "severity": 1,
+        "file": 2,
+        "line": 3,
+        "column": 4,
+        "endColumn": 5
+      },
+      {
+        "name": "haxe-pretty-msg",
+        "regexp": "^\\s+\\|\\s([^\\s^]+.*)$",
+        "message": 1,
+        "loop": true
+      }
 		],
 		"problemMatchers": [
 			{
@@ -1241,6 +1259,15 @@
 				],
 				"severity": "info",
 				"pattern": "$haxe-trace"
+			},
+			{
+				"name": "haxe-pretty",
+				"owner": "haxe",
+				"source": "tasks",
+				"applyTo": "allDocuments",
+				"pattern": [
+          "$haxe-pretty", "$haxe-pretty-msg"
+        ]
 			}
 		],
 		"viewsContainers": {
@@ -1410,6 +1437,18 @@
 		"taskDefinitions": [
 			{
 				"type": "hxml",
+				"required": [
+					"file"
+				],
+				"properties": {
+					"file": {
+						"type": "string",
+						"description": "The HXML file to run."
+					}
+				}
+			},
+			{
+				"type": "vshaxe-custom",
 				"required": [
 					"file"
 				],
